@@ -1,14 +1,20 @@
-#!/usr/bin/python
-
+from flask import Flask, request
 import argparse
-import sys
 import json
-import re
-import os
-import subprocess
+
+app = Flask(__name__)
+
 
 def start():
-   print("test") 
+    app.run()
+
+
+@app.route('/', methods=['POST'])
+def foo():
+    data = json.loads(request.data)
+    print "New commit by: {}".format(data['commits'][0]['author']['name'])
+    return "OK"
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='t3client', description='Tic Tac Toe Client')
@@ -18,5 +24,5 @@ if __name__ == '__main__':
     start_parser.set_defaults(func=start)
 
     args = parser.parse_args()
-
     args.func()
+
