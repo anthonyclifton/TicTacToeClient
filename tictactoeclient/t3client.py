@@ -29,9 +29,17 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers(help='sub-command help')
 
     create_parser = subparsers.add_parser('create', help='create game help')
+    create_parser.add_argument("base_url", help="server base url")
+    create_parser.add_argument("game_name", help="game name")
+    create_parser.add_argument("player_name", help="player name")
     create_parser.set_defaults(func=create)
 
     args = parser.parse_args()
-    args.func()
+
+    if args.func is create:
+        base_url = args.base_url
+        game_name = args.game_name
+        player_name = args.player_name
+        args.func(base_url, game_name, player_name)
 
     app.run(host='0.0.0.0', port=3333)
