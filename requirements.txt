@@ -3,4 +3,4 @@ gunicorn>=19.4.5
 pytest>=3.5.1
 marshmallow>=2.15.1
 requests>=2.18.4
-
+apscheduler>=0.0.1
