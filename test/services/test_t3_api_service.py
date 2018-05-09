@@ -22,9 +22,9 @@ class TestT3ApiService(unittest.TestCase):
             'update_url': update_url
         }
 
-        t3.create_game(game_name, player_name)
+        t3.create_game(game_name, player_name, update_url)
 
         mock_request_args = mock_requests.post.call_args
 
         self.assertEqual(mock_request_args[0][0], "{}/create".format(base_url))
-        self.assertEqual(mock_request_args[1]['data'], expected_payload)
+        self.assertEqual(mock_request_args[1]['json'], expected_payload)
