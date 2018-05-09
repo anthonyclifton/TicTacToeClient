@@ -1,7 +1,9 @@
+import atexit
 import json
 import os
 
-from flask import Flask, request
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, request, Response
 import argparse
 
 from services.t3_api_service import T3ApiService
@@ -16,16 +18,26 @@ start_host = os.environ.get("T3_CLIENT_START_HOST", "0.0.0.0")
 update_host = os.environ.get("T3_CLIENT_UPDATE_HOST", "127.0.0.1")
 port = os.environ.get("T3_CLIENT_PORT", "3333")
 
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+# Shut down the scheduler when exiting the app
+atexit.register(lambda: scheduler.shutdown())
+
 
 def create(game_name, player_name, server_base_url):
     update_url = "http://{}:{}/update".format(update_host, port)
-    # t3_api_service = T3ApiService(server_base_url)
     t3_api_service.create_game(game_name, player_name, update_url)
 
 
-def join(game_key, player_name, server_base_url):
+# def join(game_key, player_name, server_base_url):
+#     update_url = "http://{}:{}/update".format(update_host, port)
+#     # t3_api_service = T3ApiService(server_base_url)
+#     t3_api_service.join_game(game_key, player_name, update_url)
+
+
+def join_async():
     update_url = "http://{}:{}/update".format(update_host, port)
-    # t3_api_service = T3ApiService(server_base_url)
     t3_api_service.join_game(game_key, player_name, update_url)
 
 
@@ -33,8 +45,15 @@ def join(game_key, player_name, server_base_url):
 def update():
     print "Received Update"
     updated_game, errors = GameSchema().loads(request.data)
-    # game_service.game_loop(updated_game)
-    return None
+    game_service.game_loop(updated_game)
+
+    response = Response(
+        response=json.dumps("{}"),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return response
 
 
 if __name__ == '__main__':
@@ -51,7 +70,7 @@ if __name__ == '__main__':
     join_parser.add_argument("game_key", help="game key")
     join_parser.add_argument("player_name", help="player name")
     join_parser.add_argument("base_url", help="server base url")
-    join_parser.set_defaults(func=join)
+    join_parser.set_defaults(func=join_async)
 
     args = parser.parse_args()
 
@@ -59,9 +78,15 @@ if __name__ == '__main__':
         args.func(args.game_name,
                   args.player_name,
                   args.base_url)
-    elif args.func is join:
-        args.func(args.game_key,
-                  args.player_name,
-                  args.base_url)
+    elif args.func is join_async:
+        game_key = args.game_key
+        player_name = args.player_name
+        base_url = args.base_url
+
+        scheduler.add_job(
+            func=join_async,
+            id='join',
+            name='Join a game that is started',
+            replace_existing=True)
 
     app.run(host=start_host, port=int(port))
