@@ -6,11 +6,11 @@ class T3ApiService(object):
     def __init__(self, base_url):
         self.base_url = base_url
 
-    def create_game(self, game_name, player_name):
+    def create_game(self, game_name, player_name, update_url):
         payload = {
             'game_name': game_name,
             'player_name': player_name,
-            'update_url': 'http://my-ipaddress/update'
+            'update_url': update_url
         }
         self.generic_post("{}/create".format(self.base_url), payload)
 
@@ -32,4 +32,4 @@ class T3ApiService(object):
 
     @staticmethod
     def generic_post(url, payload):
-        return requests.post(url, data=payload)
+        return requests.post(url, json=payload)
