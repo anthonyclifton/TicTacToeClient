@@ -47,6 +47,7 @@ def update():
     updated_game, errors = GameSchema().loads(request.data)
     game_service.game_loop(updated_game)
 
+    # respond
     response = Response(
         response=json.dumps("{}"),
         status=200,
