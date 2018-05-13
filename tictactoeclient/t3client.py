@@ -6,9 +6,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
 import argparse
 
-from services.t3_api_service import T3ApiService
-from schemas.game_schema import GameSchema
-from services.game_service import GameService
+from tictactoeclient.services.t3_api_service import T3ApiService
+from tictactoeclient.schemas.game_schema import GameSchema
+from tictactoeclient.services.game_service import GameService
 
 GAME_COMPLETED = 4
 
@@ -32,12 +32,6 @@ player_x = False
 def create(game_name, player_name, server_base_url):
     update_url = "http://{}:{}/update".format(update_host, port)
     t3_api_service.create_game(game_name, player_name, update_url)
-
-
-# def join(game_key, player_name, server_base_url):
-#     update_url = "http://{}:{}/update".format(update_host, port)
-#     # t3_api_service = T3ApiService(server_base_url)
-#     t3_api_service.join_game(game_key, player_name, update_url)
 
 
 def join_async():

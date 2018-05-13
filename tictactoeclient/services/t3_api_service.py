@@ -26,23 +26,6 @@ class T3ApiService(object):
         url = "{}/join".format(self.base_url)
         self.generic_post(url, payload)
 
-    def mark_cell(self, game_key, player_key, x, y):
-        payload = {
-            'game_key': str(game_key),
-            'player_key': str(player_key),
-            'x': x,
-            'y': y
-        }
-        url = "{}/markcell".format(self.base_url)
-        self.generic_post(url, payload)
-
-    def ping(self):
-        url = 'http://localhost:3334/ping'
-        payload = {
-            'myurl': 'my own url'
-        }
-        self.generic_post(url, payload)
-
     def generic_get(self, url):
         pass
 
@@ -60,6 +43,7 @@ class MarkSchema(Schema):
 class PlayerSchema(Schema):
     key = fields.UUID()
     name = fields.String()
+    winner = fields.Boolean()
 
 
 class GameSchema(Schema):
