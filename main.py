@@ -1,6 +1,5 @@
 import atexit
 import json
-import os
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
