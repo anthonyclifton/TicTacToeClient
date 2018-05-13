@@ -7,7 +7,7 @@ from flask import Flask, request, Response
 import argparse
 
 from services.t3_api_service import T3ApiService
-from schemas.game_schema import GameSchema, MoveSchema
+from schemas.game_schema import GameSchema
 from services.game_service import GameService
 
 app = Flask(__name__)
