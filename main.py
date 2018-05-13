@@ -18,10 +18,6 @@ app = Flask(__name__)
 t3_api_service = T3ApiService(SERVER_BASE_URL)
 game_service = GameService(t3_api_service)
 
-# start_host = os.environ.get("T3_CLIENT_START_HOST", "0.0.0.0")
-# update_host = os.environ.get("T3_CLIENT_UPDATE_HOST", "127.0.0.1")
-# port = os.environ.get("T3_CLIENT_PORT", "3333")
-
 scheduler = BackgroundScheduler()
 scheduler.start()
 
