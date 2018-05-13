@@ -6,9 +6,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
 import argparse
 
-from tictactoeclient.services.t3_api_service import T3ApiService
-from tictactoeclient.schemas.game_schema import GameSchema
-from tictactoeclient.services.game_service import GameService
+from schemas.game_schema import GameSchema
+from services.game_service import GameService
+from services.t3_api_service import T3ApiService
 
 GAME_COMPLETED = 4
 
