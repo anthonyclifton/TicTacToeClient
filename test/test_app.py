@@ -6,7 +6,7 @@ from flask import Response
 from mock import patch
 
 from tictactoeclient.schemas.game_schema import GameSchema
-from tictactoeclient.t3client import create, update
+from main import update
 
 
 class TestApp(unittest.TestCase):

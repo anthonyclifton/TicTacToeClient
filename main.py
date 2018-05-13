@@ -6,19 +6,21 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
 import argparse
 
-from schemas.game_schema import GameSchema
-from services.game_service import GameService
-from services.t3_api_service import T3ApiService
+from tictactoeclient.configuration import SERVER_BASE_URL, CLIENT_HOST, CREATE_PORT, JOIN_PORT, CREATE_PLAYER_NAME, \
+    JOIN_PLAYER_NAME, CREATE_GAME_NAME
+from tictactoeclient.schemas.game_schema import GameSchema
+from tictactoeclient.services.game_service import GameService
+from tictactoeclient.services.t3_api_service import T3ApiService
 
 GAME_COMPLETED = 4
 
 app = Flask(__name__)
-t3_api_service = T3ApiService('http://localhost:3334')
+t3_api_service = T3ApiService(SERVER_BASE_URL)
 game_service = GameService(t3_api_service)
 
-start_host = os.environ.get("T3_CLIENT_START_HOST", "0.0.0.0")
-update_host = os.environ.get("T3_CLIENT_UPDATE_HOST", "127.0.0.1")
-port = os.environ.get("T3_CLIENT_PORT", "3333")
+# start_host = os.environ.get("T3_CLIENT_START_HOST", "0.0.0.0")
+# update_host = os.environ.get("T3_CLIENT_UPDATE_HOST", "127.0.0.1")
+# port = os.environ.get("T3_CLIENT_PORT", "3333")
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -26,17 +28,17 @@ scheduler.start()
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
 
-player_x = False
+game_creator = False
 
 
-def create(game_name, player_name, server_base_url):
-    update_url = "http://{}:{}/update".format(update_host, port)
-    t3_api_service.create_game(game_name, player_name, update_url)
+def create():
+    update_url = "http://{}:{}/update".format(CLIENT_HOST, CREATE_PORT)
+    t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
 
 
-def join_async():
-    update_url = "http://{}:{}/update".format(update_host, port)
-    t3_api_service.join_game(game_key, player_name, update_url)
+def join_async(game_key):
+    update_url = "http://{}:{}/update".format(CLIENT_HOST, JOIN_PORT)
+    t3_api_service.join_game(game_key, JOIN_PLAYER_NAME, update_url)
 
 
 @app.route('/update', methods=['POST'])
@@ -50,7 +52,7 @@ def update():
     if updated_game['state'] == GAME_COMPLETED:
         move = {'x': -1, 'y': -1}
 
-        if player_x:
+        if game_creator:
             if updated_game['player_x']['winner']:
                 print("I won!")
             else:
@@ -77,33 +79,23 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers(help='sub-command help')
 
     create_parser = subparsers.add_parser('create', help='create game help')
-    create_parser.add_argument("game_name", help="game name")
-    create_parser.add_argument("player_name", help="player name")
-    create_parser.add_argument("base_url", help="server base url")
     create_parser.set_defaults(func=create)
 
     join_parser = subparsers.add_parser('join', help='join game help')
     join_parser.add_argument("game_key", help="game key")
-    join_parser.add_argument("player_name", help="player name")
-    join_parser.add_argument("base_url", help="server base url")
     join_parser.set_defaults(func=join_async)
 
     args = parser.parse_args()
 
     if args.func is create:
-        player_x = True
-        args.func(args.game_name,
-                  args.player_name,
-                  args.base_url)
+        game_creator = True
+        create()
     elif args.func is join_async:
-        game_key = args.game_key
-        player_name = args.player_name
-        base_url = args.base_url
-
         scheduler.add_job(
             func=join_async,
+            args=[args.game_key],
             id='join',
             name='Join a game that is started',
             replace_existing=True)
 
-    app.run(host=start_host, port=int(port))
+    app.run(host=CLIENT_HOST, port=(CREATE_PORT if game_creator else JOIN_PORT))
