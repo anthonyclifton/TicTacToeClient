@@ -7,7 +7,7 @@ from flask import Flask, request, Response
 import argparse
 
 from services.t3_api_service import T3ApiService
-from schemas.game_schema import GameSchema
+from schemas.game_schema import GameSchema, MoveSchema
 from services.game_service import GameService
 
 app = Flask(__name__)
@@ -45,11 +45,10 @@ def join_async():
 def update():
     print "Received Update"
     updated_game, errors = GameSchema().loads(request.data)
-    game_service.game_loop(updated_game)
+    move = game_service.game_loop(updated_game)
 
-    # respond
     response = Response(
-        response=json.dumps("{}"),
+        response=json.dumps(move),
         status=200,
         mimetype='application/json'
     )

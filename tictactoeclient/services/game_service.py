@@ -12,6 +12,7 @@ class GameService(object):
         self.render(updated_game)
         move_x, move_y = self.analyze(updated_game)
         self.move(game_key, player_key, move_x, move_y)
+        return {'x': move_x, 'y': move_y}
 
     @staticmethod
     def analyze(updated_game):
