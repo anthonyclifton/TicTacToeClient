@@ -10,6 +10,8 @@ from services.t3_api_service import T3ApiService
 from schemas.game_schema import GameSchema
 from services.game_service import GameService
 
+GAME_COMPLETED = 4
+
 app = Flask(__name__)
 t3_api_service = T3ApiService('http://localhost:3334')
 game_service = GameService(t3_api_service)
@@ -45,7 +47,11 @@ def join_async():
 def update():
     print "Received Update"
     updated_game, errors = GameSchema().loads(request.data)
-    move = game_service.game_loop(updated_game)
+
+    if updated_game['state'] == GAME_COMPLETED:
+        move = {'x': -1, 'y': -1}
+    else:
+        move = game_service.game_loop(updated_game)
 
     response = Response(
         response=json.dumps(move),
