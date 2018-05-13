@@ -10,6 +10,7 @@ class MarkSchema(Schema):
 class PlayerSchema(Schema):
     key = fields.UUID()
     name = fields.String()
+    winner = fields.Boolean()
 
 
 class GameSchema(Schema):

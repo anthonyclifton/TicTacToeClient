@@ -26,6 +26,8 @@ scheduler.start()
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
 
+player_x = False
+
 
 def create(game_name, player_name, server_base_url):
     update_url = "http://{}:{}/update".format(update_host, port)
@@ -45,11 +47,25 @@ def join_async():
 
 @app.route('/update', methods=['POST'])
 def update():
-    print "Received Update"
+    print "Received Update: {}".format(request.data)
     updated_game, errors = GameSchema().loads(request.data)
+
+    if errors:
+        print("Errors: {}".format(errors))
 
     if updated_game['state'] == GAME_COMPLETED:
         move = {'x': -1, 'y': -1}
+
+        if player_x:
+            if updated_game['player_x']['winner']:
+                print("I won!")
+            else:
+                print("I lost!")
+        else:
+            if updated_game['player_o']['winner']:
+                print("I won!")
+            else:
+                print("I lost!")
     else:
         move = game_service.game_loop(updated_game)
 
@@ -81,6 +97,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.func is create:
+        player_x = True
         args.func(args.game_name,
                   args.player_name,
                   args.base_url)
