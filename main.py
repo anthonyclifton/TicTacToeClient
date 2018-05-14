@@ -5,8 +5,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
 import argparse
 
-from tictactoeclient.configuration import SERVER_BASE_URL, CLIENT_HOST, CREATE_PORT, JOIN_PORT, CREATE_PLAYER_NAME, \
-    JOIN_PLAYER_NAME, CREATE_GAME_NAME
+from tictactoeclient.configuration import SERVER_BASE_URL, CREATE_PORT, JOIN_PORT, CREATE_PLAYER_NAME, \
+    JOIN_PLAYER_NAME, CREATE_GAME_NAME, CLIENT_BIND_ADDRESS, CLIENT_UPDATE_HOST
 from tictactoeclient.schemas.game_schema import GameSchema
 from tictactoeclient.services.game_service import GameService
 from tictactoeclient.services.t3_api_service import T3ApiService
@@ -27,12 +27,12 @@ game_creator = False
 
 
 def create():
-    update_url = "http://{}:{}/update".format(CLIENT_HOST, CREATE_PORT)
+    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, CREATE_PORT)
     t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
 
 
 def join_async(game_key):
-    update_url = "http://{}:{}/update".format(CLIENT_HOST, JOIN_PORT)
+    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, JOIN_PORT)
     t3_api_service.join_game(game_key, JOIN_PLAYER_NAME, update_url)
 
 
@@ -93,4 +93,4 @@ if __name__ == '__main__':
             name='Join a game that is started',
             replace_existing=True)
 
-    app.run(host=CLIENT_HOST, port=(CREATE_PORT if game_creator else JOIN_PORT))
+    app.run(host=CLIENT_BIND_ADDRESS, port=(CREATE_PORT if game_creator else JOIN_PORT))
