@@ -28,7 +28,9 @@ game_creator = False
 
 def create():
     update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, CREATE_PORT)
-    t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
+    game = t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
+    print("To join this game, run:")
+    print("./join {}".format(game['key']))
 
 
 def join_async(game_key):
