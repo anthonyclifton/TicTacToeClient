@@ -38,6 +38,12 @@ def join_async(game_key):
     t3_api_service.join_game(game_key, JOIN_PLAYER_NAME, update_url)
 
 
+def lobby():
+    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, JOIN_PORT)
+    player = t3_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
+    print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
+
+
 @app.route('/update', methods=['POST'])
 def update():
     print "Received Update: {}".format(request.data)
@@ -82,6 +88,9 @@ if __name__ == '__main__':
     join_parser.add_argument("game_key", help="game key")
     join_parser.set_defaults(func=join_async)
 
+    lobby_parser = subparsers.add_parser('lobby', help='enter lobby help')
+    lobby_parser.set_defaults(func=lobby)
+
     args = parser.parse_args()
 
     if args.func is create:
@@ -94,5 +103,7 @@ if __name__ == '__main__':
             id='join',
             name='Join a game that is started',
             replace_existing=True)
+    elif args.func is lobby:
+        lobby()
 
     app.run(host=CLIENT_BIND_ADDRESS, port=(CREATE_PORT if game_creator else JOIN_PORT))

@@ -26,6 +26,16 @@ class T3ApiService(object):
         url = "{}/join".format(self.base_url)
         self.generic_post(url, payload)
 
+    def enter_lobby(self, player_name, update_url):
+        payload = {
+            'player_name': player_name,
+            'update_url': update_url
+        }
+        url = "{}/lobby".format(self.base_url)
+        response = self.generic_post(url, payload)
+        player, errors = PlayerSchema().loads(response.content)
+        return player
+
     def generic_get(self, url):
         pass
 
