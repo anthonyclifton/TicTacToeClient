@@ -27,6 +27,7 @@ class GameService(object):
         self.player_key = None
 
     def process_update(self, updated_game):
+        self.render(updated_game)
         if updated_game['state'] == GAME_COMPLETED:
             move = {'x': -1, 'y': -1}
 
@@ -57,7 +58,6 @@ class GameService(object):
         return move
 
     def game_loop(self, updated_game):
-        self.render(updated_game)
         move_x, move_y = self.analyze(updated_game)
         return {'x': move_x, 'y': move_y}
 

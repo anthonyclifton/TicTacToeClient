@@ -24,7 +24,6 @@ atexit.register(lambda: scheduler.shutdown())
 
 @app.route('/update', methods=['POST'])
 def update():
-    print "Received Update: {}".format(request.data)
     updated_game, errors = GameSchema().loads(request.data)
 
     if errors:
