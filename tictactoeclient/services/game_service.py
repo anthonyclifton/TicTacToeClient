@@ -12,6 +12,7 @@ class GameService(object):
         self.t3_api_service = t3_api_service
         self.game_creator = False
         self.lobby = False
+        self.player_key = None
 
     def process_update(self, updated_game):
         if updated_game['state'] == GAME_COMPLETED:
@@ -22,6 +23,17 @@ class GameService(object):
                     print("I won!")
                 else:
                     print("I lost!")
+            elif self.lobby:
+                if self._is_player_x(updated_game):
+                    if updated_game['player_x']['winner']:
+                        print("I won!")
+                    else:
+                        print("I lost!")
+                else:
+                    if updated_game['player_o']['winner']:
+                        print("I won!")
+                    else:
+                        print("I lost!")
             else:
                 if updated_game['player_o']['winner']:
                     print("I won!")
@@ -46,7 +58,7 @@ class GameService(object):
                              cell['x'] == x and cell['y'] == y), None):
                     unmarked_cells.append((x, y))
 
-        next_move = unmarked_cells[randint(0, len(unmarked_cells)-1)]
+        next_move = unmarked_cells[randint(0, len(unmarked_cells) - 1)]
 
         return next_move[0], next_move[1]
 
@@ -68,6 +80,7 @@ class GameService(object):
     def enter_lobby(self):
         update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, self.get_port())
         player = self.t3_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
+        self.player_key = player['key']
         print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
 
     def get_port(self):
@@ -77,3 +90,6 @@ class GameService(object):
             return LOBBY_PORT
         else:
             return JOIN_PORT
+
+    def _is_player_x(self, updated_game):
+        return updated_game['player_x']['key'] == self.player_key
