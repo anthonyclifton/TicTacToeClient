@@ -1,5 +1,6 @@
 import atexit
 import json
+from random import randint
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
@@ -13,6 +14,8 @@ from tictactoeclient.services.t3_api_service import T3ApiService
 
 GAME_COMPLETED = 4
 
+LOBBY_PORT = randint(44100, 44199)
+
 app = Flask(__name__)
 t3_api_service = T3ApiService(SERVER_BASE_URL)
 game_service = GameService(t3_api_service)
@@ -24,22 +27,23 @@ scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
 game_creator = False
+lobby = False
 
 
 def create():
-    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, CREATE_PORT)
+    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, _get_port())
     game = t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
     print("To join this game, run:")
     print("./join {}".format(game['key']))
 
 
 def join_async(game_key):
-    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, JOIN_PORT)
+    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, _get_port())
     t3_api_service.join_game(game_key, JOIN_PLAYER_NAME, update_url)
 
 
-def lobby():
-    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, JOIN_PORT)
+def enter_lobby():
+    update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, _get_port())
     player = t3_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
     print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
 
@@ -77,6 +81,15 @@ def update():
     return response
 
 
+def _get_port():
+    if game_creator:
+        return CREATE_PORT
+    elif lobby:
+        return LOBBY_PORT
+    else:
+        return JOIN_PORT
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='t3client', description='Tic Tac Toe Client')
     subparsers = parser.add_subparsers(help='sub-command help')
@@ -89,7 +102,7 @@ if __name__ == '__main__':
     join_parser.set_defaults(func=join_async)
 
     lobby_parser = subparsers.add_parser('lobby', help='enter lobby help')
-    lobby_parser.set_defaults(func=lobby)
+    lobby_parser.set_defaults(func=enter_lobby)
 
     args = parser.parse_args()
 
@@ -103,7 +116,8 @@ if __name__ == '__main__':
             id='join',
             name='Join a game that is started',
             replace_existing=True)
-    elif args.func is lobby:
-        lobby()
+    elif args.func is enter_lobby:
+        lobby = True
+        enter_lobby()
 
-    app.run(host=CLIENT_BIND_ADDRESS, port=(CREATE_PORT if game_creator else JOIN_PORT))
+    app.run(host=CLIENT_BIND_ADDRESS, port=(_get_port()))
