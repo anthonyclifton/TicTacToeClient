@@ -6,6 +6,18 @@ from tictactoeclient.configuration import CLIENT_UPDATE_HOST, CREATE_GAME_NAME, 
 GAME_COMPLETED = 4
 LOBBY_PORT = randint(44100, 44199)
 
+CORNER_MARKER = '+'
+HORIZONTAL_BORDER = '-'
+VERTICAL_BORDER = '|'
+X_MARKER = 'X'
+O_MARKER = 'O'
+EMPTY_MARKER = ' '
+
+VALUE_TO_MARKER = {
+    1: O_MARKER,
+    2: X_MARKER
+}
+
 
 class GameService(object):
     def __init__(self, t3_api_service):
@@ -62,10 +74,33 @@ class GameService(object):
 
         return next_move[0], next_move[1]
 
+    def render(self, updated_game):
+        size_x = updated_game['size_x']
+        size_y = updated_game['size_y']
+        grid = [[EMPTY_MARKER for x in range(size_y)] for y in range(size_x)]
+
+        for cell in updated_game['cells']:
+            row = cell['y']
+            column = cell['x']
+            cell_marker = VALUE_TO_MARKER[cell['value']]
+            grid[row][column] = cell_marker
+
+        self._draw_horizontal_border(size_x)
+
+        for row in grid:
+            line = VERTICAL_BORDER
+            for column in row:
+                line = line + column
+            line = line + VERTICAL_BORDER
+            print line
+
+        self._draw_horizontal_border(size_x)
+
     @staticmethod
-    def render(updated_game):
-        del updated_game
-        pass
+    def _draw_horizontal_border(size_x):
+        print "{}{}{}".format(CORNER_MARKER,
+                              (HORIZONTAL_BORDER * size_x),
+                              CORNER_MARKER)
 
     def create(self):
         update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, self.get_port())
