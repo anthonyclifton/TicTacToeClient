@@ -53,6 +53,31 @@ class TestGameService(unittest.TestCase):
 
         self.assertEqual({'x': 0, 'y': 0}, move)
 
+    def test__process_update__generates_move_on_random_unmarked_cell(self, mock_stdout):
+        game = {
+            'size_x': 2,
+            'size_y': 2,
+            'cells': [
+                {'x': 0, 'y': 0, 'value': 2},
+                {'x': 1, 'y': 1, 'value': 2}
+            ],
+            'name': 'anything',
+            'player_x': {
+                'name': 'player x',
+                'winner': False
+            },
+            'player_o': {
+                'name': 'player o',
+                'winner': False
+            },
+            'state': GAME_INPROGRESS
+        }
+
+        move = self.game_service.process_updated_game_from_server(game)
+
+        assert move['x'] == 1 and move['y'] == 0 or \
+               move['x'] == 0 and move['y'] == 1
+
     def test__process_update__displays_populated_square_on_stdout(self,
                                                                   mock_stdout):
         game = {
