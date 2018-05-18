@@ -1,8 +1,6 @@
 import unittest
 
 from mock import patch, Mock
-from requests import Response
-
 from tictactoeclient.services.t3_api_service import T3ApiService
 
 
