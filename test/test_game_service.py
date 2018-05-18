@@ -3,6 +3,8 @@ import unittest
 
 from mock import MagicMock, patch
 
+from test.game_data import GAME_COMPLETED_PLAYER_O_WINS, GAME_INPROGRESS_NO_MOVES_YET, GAME_INPROGRESS_2X2, \
+    GAME_COMPLETED_3X3_PLAYER_O_WINS, GAME_COMPLETED_2X3_PLAYER_O_WINS
 from tictactoeclient.services.game_service import GameService, GAME_COMPLETED, GAME_INPROGRESS
 
 
@@ -11,67 +13,22 @@ class TestGameService(unittest.TestCase):
     def setUp(self):
         self.game_service = GameService(MagicMock(autospec=True))
 
-    def test__process_update__returns_phoney_move_when_game_complete(self, mock_stdout):
-        game = {
-            'size_x': 3,
-            'size_y': 3,
-            'cells': [],
-            'name': 'anything',
-            'player_x': {
-                'name': 'player x',
-                'winner': False
-            },
-            'player_o': {
-                'name': 'player o',
-                'winner': True
-            },
-            'state': GAME_COMPLETED
-        }
+    def test__process_update__returns_end_game_move_when_game_complete(self, mock_stdout):
+        game = GAME_COMPLETED_PLAYER_O_WINS
 
         move = self.game_service.process_updated_game_from_server(game)
 
         self.assertEqual({'x': -1, 'y': -1}, move)
 
     def test__process_update__returns_legitimate_move_when_game_inprogress(self, mock_stdout):
-        game = {
-            'size_x': 1,
-            'size_y': 1,
-            'cells': [],
-            'name': 'anything',
-            'player_x': {
-                'name': 'player x',
-                'winner': False
-            },
-            'player_o': {
-                'name': 'player o',
-                'winner': True
-            },
-            'state': GAME_INPROGRESS
-        }
+        game = GAME_INPROGRESS_NO_MOVES_YET
 
         move = self.game_service.process_updated_game_from_server(game)
 
         self.assertEqual({'x': 0, 'y': 0}, move)
 
     def test__process_update__generates_move_on_random_unmarked_cell(self, mock_stdout):
-        game = {
-            'size_x': 2,
-            'size_y': 2,
-            'cells': [
-                {'x': 0, 'y': 0, 'value': 2},
-                {'x': 1, 'y': 1, 'value': 2}
-            ],
-            'name': 'anything',
-            'player_x': {
-                'name': 'player x',
-                'winner': False
-            },
-            'player_o': {
-                'name': 'player o',
-                'winner': False
-            },
-            'state': GAME_INPROGRESS
-        }
+        game = GAME_INPROGRESS_2X2
 
         move = self.game_service.process_updated_game_from_server(game)
 
@@ -80,24 +37,7 @@ class TestGameService(unittest.TestCase):
 
     def test__process_update__displays_populated_square_on_stdout(self,
                                                                   mock_stdout):
-        game = {
-            'name': 'something',
-            'player_x': {
-                'name': 'player 1',
-                'winner': False
-            },
-            'player_o': {
-                'name': 'player 2',
-                'winner': True
-            },
-            'size_x': 3,
-            'size_y': 3,
-            'cells': [
-                {'x': 0, 'y': 0, 'value': 2},
-                {'x': 2, 'y': 2, 'value': 1}
-            ],
-            'state': GAME_COMPLETED
-        }
+        game = GAME_COMPLETED_3X3_PLAYER_O_WINS
 
         self.game_service.process_updated_game_from_server(game)
 
@@ -120,24 +60,7 @@ class TestGameService(unittest.TestCase):
 
     def test__render__displays_populated_rectangle_on_stdout(self,
                                                              mock_stdout):
-        game = {
-            'name': 'something',
-            'player_x': {
-                'name': 'player 1',
-                'winner': False
-            },
-            'player_o': {
-                'name': 'player 2',
-                'winner': True
-            },
-            'size_x': 2,
-            'size_y': 3,
-            'cells': [
-                {'x': 0, 'y': 0, 'value': 2},
-                {'x': 1, 'y': 2, 'value': 1}
-            ],
-            'state': GAME_COMPLETED
-        }
+        game = GAME_COMPLETED_2X3_PLAYER_O_WINS
 
         self.game_service.process_updated_game_from_server(game)
 
