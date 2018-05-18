@@ -35,6 +35,12 @@ def update():
     return response
 
 
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
+
+
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
@@ -42,29 +48,21 @@ def shutdown_server():
     func()
 
 
-@app.route('/shutdown', methods=['POST'])
-def shutdown():
-    shutdown_server()
-    return 'Server shutting down...'
-
-
-if __name__ == '__main__':
+def _setup_arg_parser():
+    global args
     parser = argparse.ArgumentParser(prog='t3client', description='Tic Tac Toe Client')
     subparsers = parser.add_subparsers(help='sub-command help')
-
     create_parser = subparsers.add_parser('create', help='create game help')
     create_parser.set_defaults(mode='create')
-
     join_parser = subparsers.add_parser('join', help='join game help')
     join_parser.add_argument("game_key", help="game key")
     join_parser.set_defaults(mode='join')
-
     lobby_parser = subparsers.add_parser('lobby', help='enter lobby help')
     lobby_parser.set_defaults(mode='lobby')
-
     args = parser.parse_args()
-    client_mode = args.mode
 
+
+def _parse_command_line_arguments(client_mode):
     if client_mode is 'create':
         game_service.game_creator = True
         game_service.create()
@@ -74,6 +72,18 @@ if __name__ == '__main__':
         game_service.lobby = True
         game_service.enter_lobby()
 
-    print ""
-    print "Running at {} on port {}\n".format(CLIENT_BIND_ADDRESS, game_service.get_port())
+
+def _display_ready_message():
+    print "\nGREETINGS PROFESSOR FALKEN."
+    print "SHALL WE PLAY A GAME?\n"
+
+
+def _run_game_update_listener():
     app.run(host=CLIENT_BIND_ADDRESS, port=(game_service.get_port()))
+
+
+if __name__ == '__main__':
+    _setup_arg_parser()
+    _parse_command_line_arguments(args.mode)
+    _display_ready_message()
+    _run_game_update_listener()
