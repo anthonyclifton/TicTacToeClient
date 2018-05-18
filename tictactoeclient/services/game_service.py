@@ -34,7 +34,7 @@ class GameService(object):
         if updated_game['state'] == GAME_COMPLETED:
             return self._display_game_result(updated_game)
         else:
-            return self.analyze(updated_game)
+            return self._choose_next_move(updated_game)
 
     def _display_game_result(self, updated_game):
         print ""
@@ -62,7 +62,7 @@ class GameService(object):
         return END_GAME_NULL_MOVE
 
     @staticmethod
-    def analyze(updated_game):
+    def _choose_next_move(updated_game):
         unmarked_cells = []
         for y in range(0, updated_game['size_y']):
             for x in range(0, updated_game['size_x']):
