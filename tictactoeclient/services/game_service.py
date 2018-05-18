@@ -103,17 +103,17 @@ class GameService(object):
                               CORNER_MARKER)
 
     def create(self):
-        update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, self.get_port())
+        update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
         game = self.t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
         print("To join this game, run:")
         print("./join {}".format(game['key']))
 
     def join_async(self, game_key):
-        update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, self.get_port())
+        update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
         self.t3_api_service.join_game(game_key, JOIN_PLAYER_NAME, update_url)
 
     def enter_lobby(self):
-        update_url = "http://{}:{}/update".format(CLIENT_UPDATE_HOST, self.get_port())
+        update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
         player = self.t3_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
         self.player_key = player['key']
         print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
