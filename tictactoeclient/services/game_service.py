@@ -30,7 +30,7 @@ class GameService(object):
         self.player_key = None
 
     def process_updated_game_from_server(self, updated_game):
-        self.render(updated_game)
+        self._display_game_board(updated_game)
         if updated_game['state'] == GAME_COMPLETED:
             return self._display_game_result(updated_game)
         else:
@@ -76,7 +76,7 @@ class GameService(object):
         move_y = next_move[1]
         return {'x': move_x, 'y': move_y}
 
-    def render(self, updated_game):
+    def _display_game_board(self, updated_game):
         size_x = updated_game['size_x']
         size_y = updated_game['size_y']
         grid = [[EMPTY_MARKER for x in range(size_x)] for y in range(size_y)]

@@ -72,7 +72,7 @@ class TestGameService(unittest.TestCase):
             ]
         }
 
-        game_service.render(game)
+        game_service._display_game_board(game)
 
         expected_output_lines = [
             '',
@@ -110,7 +110,7 @@ class TestGameService(unittest.TestCase):
             ]
         }
 
-        game_service.render(game)
+        game_service._display_game_board(game)
 
         expected_output_lines = [
             '',
