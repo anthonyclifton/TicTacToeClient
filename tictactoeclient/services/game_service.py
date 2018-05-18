@@ -34,7 +34,7 @@ class GameService(object):
         if updated_game['state'] == GAME_COMPLETED:
             return self._display_game_result(updated_game)
         else:
-            return self.game_loop(updated_game)
+            return self.analyze(updated_game)
 
     def _display_game_result(self, updated_game):
         print ""
@@ -61,10 +61,6 @@ class GameService(object):
                 print("I lost!")
         return END_GAME_NULL_MOVE
 
-    def game_loop(self, updated_game):
-        move_x, move_y = self.analyze(updated_game)
-        return {'x': move_x, 'y': move_y}
-
     @staticmethod
     def analyze(updated_game):
         unmarked_cells = []
@@ -76,7 +72,9 @@ class GameService(object):
 
         next_move = unmarked_cells[randint(0, len(unmarked_cells) - 1)]
 
-        return next_move[0], next_move[1]
+        move_x = next_move[0]
+        move_y = next_move[1]
+        return {'x': move_x, 'y': move_y}
 
     def render(self, updated_game):
         size_x = updated_game['size_x']
