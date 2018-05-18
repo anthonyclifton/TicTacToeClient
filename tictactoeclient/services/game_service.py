@@ -3,6 +3,9 @@ from random import randint
 from tictactoeclient.configuration import CLIENT_UPDATE_HOST, CREATE_GAME_NAME, CREATE_PLAYER_NAME, JOIN_PLAYER_NAME, \
     CREATE_PORT, JOIN_PORT
 
+END_GAME_NULL_MOVE = {'x': -1, 'y': -1}
+
+GAME_INPROGRESS = 1
 GAME_COMPLETED = 4
 LOBBY_PORT = randint(44100, 44199)
 
@@ -26,37 +29,37 @@ class GameService(object):
         self.lobby = False
         self.player_key = None
 
-    def process_update(self, updated_game):
+    def process_updated_game_from_server(self, updated_game):
         self.render(updated_game)
         if updated_game['state'] == GAME_COMPLETED:
-            move = {'x': -1, 'y': -1}
+            return self._display_game_result(updated_game)
+        else:
+            return self.game_loop(updated_game)
 
-            print ""
-            if self.game_creator:
+    def _display_game_result(self, updated_game):
+        print ""
+        if self.game_creator:
+            if updated_game['player_x']['winner']:
+                print("I won!")
+            else:
+                print("I lost!")
+        elif self.lobby:
+            if self._is_player_x(updated_game):
                 if updated_game['player_x']['winner']:
                     print("I won!")
                 else:
                     print("I lost!")
-            elif self.lobby:
-                if self._is_player_x(updated_game):
-                    if updated_game['player_x']['winner']:
-                        print("I won!")
-                    else:
-                        print("I lost!")
-                else:
-                    if updated_game['player_o']['winner']:
-                        print("I won!")
-                    else:
-                        print("I lost!")
             else:
                 if updated_game['player_o']['winner']:
                     print("I won!")
                 else:
                     print("I lost!")
         else:
-            move = self.game_loop(updated_game)
-
-        return move
+            if updated_game['player_o']['winner']:
+                print("I won!")
+            else:
+                print("I lost!")
+        return END_GAME_NULL_MOVE
 
     def game_loop(self, updated_game):
         move_x, move_y = self.analyze(updated_game)

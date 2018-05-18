@@ -24,7 +24,7 @@ def update():
     if errors:
         print("Errors: {}".format(errors))
 
-    move = game_service.process_update(updated_game)
+    move = game_service.process_updated_game_from_server(updated_game)
 
     response = Response(
         response=json.dumps(move),
