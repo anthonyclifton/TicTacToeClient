@@ -1,8 +1,6 @@
-import atexit
 import json
 import logging
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
 import argparse
 
@@ -15,12 +13,6 @@ from tictactoeclient.services.t3_api_service import T3ApiService
 app = Flask(__name__)
 t3_api_service = T3ApiService(SERVER_BASE_URL)
 game_service = GameService(t3_api_service)
-
-# scheduler = BackgroundScheduler()
-# scheduler.start()
-#
-# # Shut down the scheduler when exiting the app
-# atexit.register(lambda: scheduler.shutdown())
 
 logging.basicConfig()
 
@@ -78,12 +70,6 @@ if __name__ == '__main__':
         game_service.create()
     elif client_mode is 'join':
         game_service.join_async(args.game_key)
-        # scheduler.add_job(
-        #     func=game_service.join_async,
-        #     args=[args.game_key],
-        #     id='join',
-        #     name='Join a game that is started',
-        #     replace_existing=True)
     elif client_mode is 'lobby':
         game_service.lobby = True
         game_service.enter_lobby()
