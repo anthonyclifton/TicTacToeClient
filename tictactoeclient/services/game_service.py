@@ -78,7 +78,7 @@ class GameService(object):
     def render(self, updated_game):
         size_x = updated_game['size_x']
         size_y = updated_game['size_y']
-        grid = [[EMPTY_MARKER for x in range(size_y)] for y in range(size_x)]
+        grid = [[EMPTY_MARKER for x in range(size_x)] for y in range(size_y)]
 
         for cell in updated_game['cells']:
             row = cell['y']

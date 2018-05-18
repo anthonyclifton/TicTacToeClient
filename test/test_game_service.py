@@ -8,7 +8,7 @@ from tictactoeclient.services.game_service import GameService
 
 @patch('sys.stdout', new_callable=StringIO)
 class TestGameService(unittest.TestCase):
-    def test__render__produces_populated_array_from_game_object(self,
+    def test__render__produces_populated_square_from_game_object(self,
                                                                 mock_stdout):
         game_service = GameService(MagicMock(autospec=True))
         game = {
@@ -46,4 +46,40 @@ class TestGameService(unittest.TestCase):
             self.assertEqual(expected_output_lines[line_number],
                              output_lines[line_number])
 
+    def test__render__produces_populated_rectangle_from_game_object(self,
+                                                                    mock_stdout):
+        game_service = GameService(MagicMock(autospec=True))
+        game = {
+            'name': 'something',
+            'player_x': {
+                'name': 'player 1'
+            },
+            'player_o': {
+                'name': 'player 2'
+            },
+            'size_x': 2,
+            'size_y': 3,
+            'cells': [
+                {'x': 0, 'y': 0, 'value': 2},
+                {'x': 1, 'y': 2, 'value': 1}
+            ]
+        }
 
+        game_service.render(game)
+
+        expected_output_lines = [
+            '',
+            'Game: something',
+            'Player X: player 1',
+            'Player O: player 2',
+            '+--+',
+            '|X |',
+            '|  |',
+            '| O|',
+            '+--+'
+        ]
+        output_lines = mock_stdout.getvalue().split('\n')
+
+        for line_number in range(0, len(expected_output_lines)):
+            self.assertEqual(expected_output_lines[line_number],
+                             output_lines[line_number])
