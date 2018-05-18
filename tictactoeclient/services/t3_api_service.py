@@ -2,16 +2,22 @@
 import requests
 from marshmallow import Schema, fields
 
+from tictactoeclient.configuration import GAME_M, GAME_N, GAME_K
+
 
 class T3ApiService(object):
     def __init__(self, base_url):
         self.base_url = base_url
 
     def create_game(self, game_name, player_name, update_url):
+        size_x, size_y, winning_length = _get_board_size()
         payload = {
             'game_name': game_name,
             'player_name': player_name,
-            'update_url': update_url
+            'update_url': update_url,
+            'size_x': size_x,
+            'size_y': size_y,
+            'winning_length': winning_length
         }
         response = self.generic_post("{}/create".format(self.base_url), payload)
         game, errors = GameSchema().loads(response.content)
@@ -42,6 +48,10 @@ class T3ApiService(object):
     @staticmethod
     def generic_post(url, payload):
         return requests.post(url, json=payload)
+
+
+def _get_board_size():
+    return GAME_M, GAME_N, GAME_K
 
 
 class MarkSchema(Schema):
