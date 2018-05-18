@@ -53,26 +53,28 @@ class TestGameService(unittest.TestCase):
 
         self.assertEqual({'x': 0, 'y': 0}, move)
 
-    def test__render__produces_populated_square_from_game_object(self,
-                                                                 mock_stdout):
-        game_service = GameService(MagicMock(autospec=True))
+    def test__process_update__displays_populated_square_on_stdout(self,
+                                                                  mock_stdout):
         game = {
             'name': 'something',
             'player_x': {
-                'name': 'player 1'
+                'name': 'player 1',
+                'winner': False
             },
             'player_o': {
-                'name': 'player 2'
+                'name': 'player 2',
+                'winner': True
             },
             'size_x': 3,
             'size_y': 3,
             'cells': [
                 {'x': 0, 'y': 0, 'value': 2},
                 {'x': 2, 'y': 2, 'value': 1}
-            ]
+            ],
+            'state': GAME_COMPLETED
         }
 
-        game_service._display_game_board(game)
+        self.game_service.process_updated_game_from_server(game)
 
         expected_output_lines = [
             '',
@@ -91,26 +93,28 @@ class TestGameService(unittest.TestCase):
             self.assertEqual(expected_output_lines[line_number],
                              output_lines[line_number])
 
-    def test__render__produces_populated_rectangle_from_game_object(self,
-                                                                    mock_stdout):
-        game_service = GameService(MagicMock(autospec=True))
+    def test__render__displays_populated_rectangle_on_stdout(self,
+                                                             mock_stdout):
         game = {
             'name': 'something',
             'player_x': {
-                'name': 'player 1'
+                'name': 'player 1',
+                'winner': False
             },
             'player_o': {
-                'name': 'player 2'
+                'name': 'player 2',
+                'winner': True
             },
             'size_x': 2,
             'size_y': 3,
             'cells': [
                 {'x': 0, 'y': 0, 'value': 2},
                 {'x': 1, 'y': 2, 'value': 1}
-            ]
+            ],
+            'state': GAME_COMPLETED
         }
 
-        game_service._display_game_board(game)
+        self.game_service.process_updated_game_from_server(game)
 
         expected_output_lines = [
             '',
