@@ -12,6 +12,13 @@ class TestGameService(unittest.TestCase):
                                                                 mock_stdout):
         game_service = GameService(MagicMock(autospec=True))
         game = {
+            'name': 'something',
+            'player_x': {
+                'name': 'player 1'
+            },
+            'player_o': {
+                'name': 'player 2'
+            },
             'size_x': 3,
             'size_y': 3,
             'cells': [
@@ -23,6 +30,10 @@ class TestGameService(unittest.TestCase):
         game_service.render(game)
 
         expected_output_lines = [
+            '',
+            'Game: something',
+            'Player X: player 1',
+            'Player O: player 2',
             '+---+',
             '|X  |',
             '|   |',

@@ -31,6 +31,7 @@ class GameService(object):
         if updated_game['state'] == GAME_COMPLETED:
             move = {'x': -1, 'y': -1}
 
+            print ""
             if self.game_creator:
                 if updated_game['player_x']['winner']:
                     print("I won!")
@@ -85,6 +86,10 @@ class GameService(object):
             cell_marker = VALUE_TO_MARKER[cell['value']]
             grid[row][column] = cell_marker
 
+        print ""
+        print "Game: {}".format(updated_game['name'])
+        print "Player X: {}".format(updated_game['player_x']['name'])
+        print "Player O: {}".format(updated_game['player_o']['name'])
         self._draw_horizontal_border(size_x)
 
         for row in grid:
