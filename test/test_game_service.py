@@ -13,21 +13,24 @@ class TestGameService(unittest.TestCase):
     def setUp(self):
         self.game_service = GameService(MagicMock(autospec=True))
 
-    def test__process_update__returns_end_game_move_when_game_complete(self, mock_stdout):
+    def test__process_update__returns_end_game_move_when_game_complete(self,
+                                                                       mock_stdout):
         game = GAME_COMPLETED_PLAYER_O_WINS
 
         move = self.game_service.process_updated_game_from_server(game)
 
         self.assertEqual({'x': -1, 'y': -1}, move)
 
-    def test__process_update__returns_legitimate_move_when_game_inprogress(self, mock_stdout):
+    def test__process_update__returns_legitimate_move_when_game_inprogress(self,
+                                                                           mock_stdout):
         game = GAME_INPROGRESS_NO_MOVES_YET
 
         move = self.game_service.process_updated_game_from_server(game)
 
         self.assertEqual({'x': 0, 'y': 0}, move)
 
-    def test__process_update__generates_move_on_random_unmarked_cell(self, mock_stdout):
+    def test__process_update__generates_move_on_random_unmarked_cell(self,
+                                                                     mock_stdout):
         game = GAME_INPROGRESS_2X2
 
         move = self.game_service.process_updated_game_from_server(game)
