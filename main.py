@@ -1,5 +1,6 @@
 import atexit
 import json
+import logging
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
@@ -20,6 +21,8 @@ scheduler.start()
 
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
+
+logging.basicConfig()
 
 
 @app.route('/update', methods=['POST'])
@@ -84,4 +87,6 @@ if __name__ == '__main__':
         game_service.lobby = True
         game_service.enter_lobby()
 
+    print ""
+    print "Running at {} on port {}\n".format(CLIENT_BIND_ADDRESS, game_service.get_port())
     app.run(host=CLIENT_BIND_ADDRESS, port=(game_service.get_port()))

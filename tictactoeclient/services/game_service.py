@@ -105,6 +105,7 @@ class GameService(object):
     def create(self):
         update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
         game = self.t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
+        print ""
         print("To join this game, run:")
         print("./join {}".format(game['key']))
 
@@ -116,6 +117,7 @@ class GameService(object):
         update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
         player = self.t3_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
         self.player_key = player['key']
+        print ""
         print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
 
     def get_port(self):
