@@ -45,4 +45,39 @@ will be unable to make requests back to the client.
 ## Editing the Configuration File
 
 * You will find a file called `configuration.py` in `tictactoeclient` in the project folder
+* Set the server base url.  It will look something like this:
+`SERVER_BASE_URL = 'http://localhost:3334'`
+* Get your external ip address using something like `ifconfig en0` and look for the `inet` value
+* Edit your client's host so it looks something like this: `CLIENT_UPDATE_HOST = 'X.X.X.X'`
+where `X.X.X.X` is the value from `inet` in the previous step
+* Edit the game name to use when you create a game: `CREATE_GAME_NAME = 'GREETINGS PROFESSOR FALKEN'`
+* Edit the player name to use when creating a game: `CREATE_PLAYER_NAME = 'JOSHUA'`
+* Edit the player name to use when joining or entering the lobby:
+`JOIN_PLAYER_NAME = 'LIGHTMAN'`
 
+## Game Flow
+
+* Player versus Player Mode
+  * Execute `./create` on a client to create a new game
+  * The create client sends an http post the game server, notifying it that a new
+  game should be started.
+  * The server responds with the empty game object (no moves yet).
+  * The create client starts a web server so it can listen for game updates.
+  * Execute `./join [game-uuid-key]` on another client to the join that game.
+  When you create a game it will provide output with the join command followed by
+  the relevant game key
+  * The join client sends an http post to the game server, notifying it that it
+  wants to join the game created by the create client.
+  * The server responds with the empty game object (no moves yet).
+  * The join client starts a web server so it can listen for game updates.
+  * The server sends an http post to the create client with the game object.
+  * The create client responds with its move after analyzing the board.
+  * The server sends an http post to the join client with the game object and
+  the create client's move.
+  * (Note that the create client always plays X and the join client always plays O).
+  * The server continues back and forth, sending updates to the clients and receiving
+  the client's move as the response.
+  * This continues until the board is full or the game is won, in which case final
+  game updates are sent to both clients with the value of the `state` key set to 4
+  (or GAME_COMPLETED).  While in the play the `state` is set to 1 (or GAME_INPROGRESS).
+* Tournament Mode
