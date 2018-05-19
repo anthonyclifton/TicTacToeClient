@@ -66,22 +66,21 @@ def _setup_arg_parser():
 
 
 def _parse_command_line_arguments(client_mode):
+    port = None
     if client_mode is 'create':
         port = _setup_based_on_game_mode(CREATE_GAME_MODE)
         update_url = _get_update_url(port)
         tictactoe_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
-        _run_game_update_listener(port)
     elif client_mode is 'join':
         port = _setup_based_on_game_mode(JOIN_GAME_MODE)
         update_url = _get_update_url(port)
         tictactoe_api_service.join_game(args.game_key, JOIN_PLAYER_NAME, update_url)
-        _run_game_update_listener(port)
     elif client_mode is 'lobby':
         port = _setup_based_on_game_mode(LOBBY_MODE)
         update_url = _get_update_url(port)
         player = tictactoe_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
         game_service.set_player_key(player['key'])
-        _run_game_update_listener(port)
+    _run_game_update_listener(port)
 
 
 def _setup_based_on_game_mode(game_mode):
