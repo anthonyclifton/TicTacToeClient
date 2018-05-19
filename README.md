@@ -120,6 +120,21 @@ supply an `application/json` raw post body like the following:
 	"tournament_name": "Test Tournament 5"
 }`
 
+* `POST http://localhost:3334/round` will start a game round.  The server will run
+one game at a time for each pair of player participants.  You can run as many rounds
+as you want by executing the request multiple times.  You can configure each round
+by supplying a post body with the tournament key like the following:
+
+`{
+	"tournament_key": "8fd11a8d-687d-4487-b773-4c86d8d5c624",
+	"x_size": 3,
+	"y_size": 3,
+	"winning_length": 3
+}`
+
+* `DELETE http://localhost:3334/tournament` will complete the tournament and display
+tournament results on stdout.
+
 ## Notes
 
 * Sending a move that is outside the boundary of the game board will result in a draw.
