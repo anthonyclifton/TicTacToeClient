@@ -17,7 +17,7 @@ app = Flask(__name__)
 logging.basicConfig()
 
 tictactoe_api_service = T3ApiService(SERVER_BASE_URL, requests)
-game_service = GameService(tictactoe_api_service)
+game_service = GameService()
 
 
 @app.route('/update', methods=['POST'])

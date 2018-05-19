@@ -6,8 +6,7 @@ from tictactoeclient.constants import GAME_COMPLETED, END_GAME_NULL_MOVE, \
 
 
 class GameService(object):
-    def __init__(self, t3_api_service):
-        self.t3_api_service = t3_api_service
+    def __init__(self):
         self.game_mode = None
         self.player_key = None
 

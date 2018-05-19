@@ -12,7 +12,7 @@ from tictactoeclient.services.game_service import GameService
 @patch('sys.stdout', new_callable=StringIO)
 class TestGameService(unittest.TestCase):
     def setUp(self):
-        self.game_service = GameService(MagicMock(autospec=True))
+        self.game_service = GameService()
 
     def test__process_update__returns_end_game_move_when_game_complete(self,
                                                                        mock_stdout):
