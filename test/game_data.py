@@ -1,5 +1,15 @@
+import json
+from uuid import uuid4
+
 GAME_INPROGRESS = 1
 GAME_COMPLETED = 4
+
+GAME_KEY = uuid4()
+PLAYER_KEY = uuid4()
+
+CREATE_RESPONSE = json.dumps({'key': str(GAME_KEY)})
+
+LOBBY_RESPONSE = json.dumps({'name': 'Player Name', 'key': str(PLAYER_KEY)})
 
 GAME_COMPLETED_PLAYER_O_WINS = {
     'size_x': 3,

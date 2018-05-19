@@ -1,13 +1,13 @@
 
-import requests
 from marshmallow import Schema, fields
 
 from tictactoeclient.configuration import GAME_M, GAME_N, GAME_K
 
 
 class T3ApiService(object):
-    def __init__(self, base_url):
+    def __init__(self, base_url, requests):
         self.base_url = base_url
+        self.requests = requests
 
     def create_game(self, game_name, player_name, update_url):
         size_x, size_y, winning_length = _get_board_size()
@@ -19,9 +19,12 @@ class T3ApiService(object):
             'size_y': size_y,
             'winning_length': winning_length
         }
-        response = self.generic_post("{}/create".format(self.base_url), payload)
+        response = self._generic_post("{}/create".format(self.base_url), payload)
         game, errors = GameSchema().loads(response.content)
-        return game
+
+        print ""
+        print("To join this game, run:")
+        print("./join {}".format(game['key']))
 
     def join_game(self, game_key, player_name, update_url):
         payload = {
@@ -30,7 +33,7 @@ class T3ApiService(object):
             'update_url': update_url
         }
         url = "{}/join".format(self.base_url)
-        self.generic_post(url, payload)
+        self._generic_post(url, payload)
 
     def enter_lobby(self, player_name, update_url):
         payload = {
@@ -38,16 +41,14 @@ class T3ApiService(object):
             'update_url': update_url
         }
         url = "{}/lobby".format(self.base_url)
-        response = self.generic_post(url, payload)
+        response = self._generic_post(url, payload)
         player, errors = PlayerSchema().loads(response.content)
-        return player
 
-    def generic_get(self, url):
-        pass
+        print ""
+        print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
 
-    @staticmethod
-    def generic_post(url, payload):
-        return requests.post(url, json=payload)
+    def _generic_post(self, url, payload):
+        return self.requests.post(url, json=payload)
 
 
 def _get_board_size():

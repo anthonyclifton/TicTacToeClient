@@ -1,20 +1,22 @@
 import json
 import logging
 
+import requests
 from flask import Flask, request, Response
 import argparse
 
-from tictactoeclient.configuration import SERVER_BASE_URL, CLIENT_BIND_ADDRESS
+from tictactoeclient.configuration import SERVER_BASE_URL, CLIENT_BIND_ADDRESS, CREATE_PORT, JOIN_PORT, \
+    CLIENT_UPDATE_HOST, CREATE_GAME_NAME, CREATE_PLAYER_NAME, JOIN_PLAYER_NAME
 from tictactoeclient.schemas.game_schema import GameSchema
-from tictactoeclient.services.game_service import GameService
+from tictactoeclient.services.game_service import GameService, LOBBY_PORT
 from tictactoeclient.services.t3_api_service import T3ApiService
 
 
 app = Flask(__name__)
-t3_api_service = T3ApiService(SERVER_BASE_URL)
-game_service = GameService(t3_api_service)
-
 logging.basicConfig()
+
+tictactoe_api_service = T3ApiService(SERVER_BASE_URL, requests)
+game_service = GameService(tictactoe_api_service)
 
 
 @app.route('/update', methods=['POST'])
@@ -64,13 +66,20 @@ def _setup_arg_parser():
 
 def _parse_command_line_arguments(client_mode):
     if client_mode is 'create':
-        game_service.game_creator = True
-        game_service.create()
+        port = _get_port(create_game_mode=True)
+        update_url = _get_update_url(port)
+        tictactoe_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
+        _run_game_update_listener(port)
     elif client_mode is 'join':
-        game_service.join_async(args.game_key)
+        port = _get_port()
+        update_url = _get_update_url(port)
+        tictactoe_api_service.join_game(args.game_key, JOIN_PLAYER_NAME, update_url)
+        _run_game_update_listener(port)
     elif client_mode is 'lobby':
-        game_service.lobby = True
-        game_service.enter_lobby()
+        port = _get_port(lobby_mode=True)
+        update_url = _get_update_url(port)
+        tictactoe_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
+        _run_game_update_listener(port)
 
 
 def _display_ready_message():
@@ -78,12 +87,24 @@ def _display_ready_message():
     print "SHALL WE PLAY A GAME?\n"
 
 
-def _run_game_update_listener():
-    app.run(host=CLIENT_BIND_ADDRESS, port=(game_service.get_port()))
+def _get_port(create_game_mode=False, lobby_mode=False):
+    if create_game_mode:
+        return CREATE_PORT
+    elif lobby_mode:
+        return LOBBY_PORT
+    else:
+        return JOIN_PORT
+
+
+def _get_update_url(port):
+    return "http://{}:{}".format(CLIENT_UPDATE_HOST, port)
+
+
+def _run_game_update_listener(port):
+    app.run(host=CLIENT_BIND_ADDRESS, port=port)
 
 
 if __name__ == '__main__':
     _setup_arg_parser()
-    _parse_command_line_arguments(args.mode)
     _display_ready_message()
-    _run_game_update_listener()
+    _parse_command_line_arguments(args.mode)

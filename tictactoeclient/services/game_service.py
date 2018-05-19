@@ -1,8 +1,5 @@
 from random import randint
 
-from tictactoeclient.configuration import CLIENT_UPDATE_HOST, CREATE_GAME_NAME, CREATE_PLAYER_NAME, JOIN_PLAYER_NAME, \
-    CREATE_PORT, JOIN_PORT
-
 END_GAME_NULL_MOVE = {'x': -1, 'y': -1}
 
 GAME_INPROGRESS = 1
@@ -107,32 +104,6 @@ class GameService(object):
         print "{}{}{}".format(CORNER_MARKER,
                               (HORIZONTAL_BORDER * size_x),
                               CORNER_MARKER)
-
-    def create(self):
-        update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
-        game = self.t3_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
-        print ""
-        print("To join this game, run:")
-        print("./join {}".format(game['key']))
-
-    def join_async(self, game_key):
-        update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
-        self.t3_api_service.join_game(game_key, JOIN_PLAYER_NAME, update_url)
-
-    def enter_lobby(self):
-        update_url = "http://{}:{}".format(CLIENT_UPDATE_HOST, self.get_port())
-        player = self.t3_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
-        self.player_key = player['key']
-        print ""
-        print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
-
-    def get_port(self):
-        if self.game_creator:
-            return CREATE_PORT
-        elif self.lobby:
-            return LOBBY_PORT
-        else:
-            return JOIN_PORT
 
     def _is_player_x(self, updated_game):
         return updated_game['player_x']['key'] == self.player_key

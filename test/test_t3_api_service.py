@@ -1,28 +1,16 @@
 import unittest
 
-from mock import patch, Mock
+from mock import Mock
+
+from test.game_data import GAME_KEY, CREATE_RESPONSE, LOBBY_RESPONSE
 from tictactoeclient.services.t3_api_service import T3ApiService
 
 
 class TestT3ApiService(unittest.TestCase):
-    @patch('tictactoeclient.services.t3_api_service._get_board_size')
-    @patch('tictactoeclient.services.t3_api_service.requests')
-    def test__create_game__calls_post_with_game_size(self,
-                                                     mock_requests,
-                                                     mock_get_board_size):
 
-        mock_get_board_size.side_effect = self._fake_get_board_size
-
-        t3_api_service = T3ApiService('base')
-
-        mock_response = Mock()
-        mock_response.content = '{}'
-
-        mock_requests.post.return_value = mock_response
-
-        t3_api_service.create_game("Test Game", "Player Name", "Update URL")
-
-        call_args = mock_requests.post.call_args
+    def test__create_game__calls_post_with_correct_keys(self):
+        base_url = 'http://base_url'
+        expected_url = "{}/create".format(base_url)
 
         expected_json = {
             'update_url': 'Update URL',
@@ -33,8 +21,55 @@ class TestT3ApiService(unittest.TestCase):
             'winning_length': 3
         }
 
-        self.assertEqual(expected_json, call_args[1]['json'])
+        fake_requests = FakeRequests(expected_url, expected_json)
+        t3_api_service = T3ApiService(base_url, fake_requests)
+
+        t3_api_service.create_game("Test Game", "Player Name", "Update URL")
+
+    def test__join_game__calls_post_with_correct_keys(self):
+        base_url = 'http://base_url'
+        expected_url = "{}/join".format(base_url)
+
+        expected_json = {
+            'game_key': GAME_KEY,
+            'player_name': "Player Name",
+            'update_url': "Update URL"
+        }
+
+        fake_requests = FakeRequests(expected_url, expected_json)
+        t3_api_service = T3ApiService(base_url, fake_requests)
+
+        t3_api_service.join_game(GAME_KEY, "Player Name", "Update URL")
+
+    def test__enter_lobby__calls_post_with_correct_keys(self):
+        base_url = 'http://base_url'
+        expected_url = "{}/lobby".format(base_url)
+
+        expected_json = {
+            'player_name': "Player Name",
+            'update_url': "Update URL"
+        }
+
+        fake_requests = FakeRequests(expected_url, expected_json)
+        t3_api_service = T3ApiService(base_url, fake_requests)
+
+        t3_api_service.enter_lobby("Player Name", "Update URL")
 
     @staticmethod
     def _fake_get_board_size():
         return 3, 3, 3
+
+
+class FakeRequests(object):
+    def __init__(self, expected_url, expected_payload):
+        self.expected_url = expected_url
+        self.expected_payload = expected_payload
+
+    def post(self, url, json):
+        assert url == self.expected_url
+        assert json == self.expected_payload
+
+        response = Mock()
+        response.content = LOBBY_RESPONSE if 'lobby' in url else CREATE_RESPONSE
+
+        return response
