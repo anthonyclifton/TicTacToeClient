@@ -5,18 +5,21 @@ GAME_INPROGRESS = 1
 GAME_COMPLETED = 4
 
 GAME_KEY = uuid4()
-PLAYER_KEY = uuid4()
+PLAYER_KEY_1 = uuid4()
+PLAYER_KEY_2 = uuid4()
 
 CREATE_RESPONSE = json.dumps({'key': str(GAME_KEY)})
 
-LOBBY_RESPONSE = json.dumps({'name': 'Player Name', 'key': str(PLAYER_KEY)})
+LOBBY_RESPONSE = json.dumps({'name': 'Player Name', 'key': str(PLAYER_KEY_1)})
 
 PLAYER_WINNER = {
+    'key': str(PLAYER_KEY_1),
     'name': 'player winner',
     'winner': True
 }
 
 PLAYER_LOSER = {
+    'key': str(PLAYER_KEY_2),
     'name': 'player loser',
     'winner': False
 }

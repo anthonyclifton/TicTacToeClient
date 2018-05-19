@@ -4,7 +4,7 @@ import unittest
 from mock import MagicMock, patch
 
 from test.game_data import GAME_COMPLETED_PLAYER_O_WINS, GAME_INPROGRESS_NO_MOVES_YET, GAME_INPROGRESS_2X2, \
-    GAME_COMPLETED_3X3_PLAYER_O_WINS, GAME_COMPLETED_2X3_PLAYER_O_WINS, PLAYER_KEY, PLAYER_WINNER, PLAYER_LOSER
+    GAME_COMPLETED_3X3_PLAYER_O_WINS, GAME_COMPLETED_2X3_PLAYER_O_WINS, PLAYER_KEY_1, PLAYER_WINNER, PLAYER_LOSER
 from tictactoeclient.constants import LOBBY_MODE, CREATE_GAME_MODE, JOIN_GAME_MODE
 from tictactoeclient.services.game_service import GameService
 
@@ -92,8 +92,8 @@ class TestGameService(unittest.TestCase):
 
     def test__set_player_key__sets_the_player_key(self,
                                                   mock_stdout):
-        self.game_service.set_player_key(str(PLAYER_KEY))
-        self.assertEqual(str(PLAYER_KEY), self.game_service.player_key)
+        self.game_service.set_player_key(str(PLAYER_KEY_1))
+        self.assertEqual(str(PLAYER_KEY_1), self.game_service.player_key)
 
     def test__display_game_result__winner_if_create_game_mode_and_player_x_winner(self,
                                                                                   mock_stdout):
@@ -123,4 +123,40 @@ class TestGameService(unittest.TestCase):
         self.game_service.set_game_mode(JOIN_GAME_MODE)
         self.game_service._display_game_result(PLAYER_WINNER, PLAYER_LOSER)
         output_lines = mock_stdout.getvalue().split('\n')
+        assert 'I lost!' in output_lines
+
+    def test__display_game_result__winner_if_lobby_mode_and_player_is_x_and_winner(self,
+                                                                                  mock_stdout):
+        self.game_service.set_game_mode(LOBBY_MODE)
+        self.game_service.set_player_key(str(PLAYER_WINNER['key']))
+        self.game_service._display_game_result(PLAYER_WINNER, PLAYER_LOSER)
+        output_lines = mock_stdout.getvalue().split('\n')
+
+        assert 'I won!' in output_lines
+
+    def test__display_game_result__loser_if_lobby_mode_and_player_is_x_and_loser(self,
+                                                                                  mock_stdout):
+        self.game_service.set_game_mode(LOBBY_MODE)
+        self.game_service.set_player_key(str(PLAYER_LOSER['key']))
+        self.game_service._display_game_result(PLAYER_LOSER, PLAYER_WINNER)
+        output_lines = mock_stdout.getvalue().split('\n')
+
+        assert 'I lost!' in output_lines
+
+    def test__display_game_result__winner_if_lobby_mode_and_player_is_o_and_winner(self,
+                                                                                  mock_stdout):
+        self.game_service.set_game_mode(LOBBY_MODE)
+        self.game_service.set_player_key(str(PLAYER_WINNER['key']))
+        self.game_service._display_game_result(PLAYER_LOSER, PLAYER_WINNER)
+        output_lines = mock_stdout.getvalue().split('\n')
+
+        assert 'I won!' in output_lines
+
+    def test__display_game_result__loser_if_lobby_mode_and_player_is_o_and_loser(self,
+                                                                                  mock_stdout):
+        self.game_service.set_game_mode(LOBBY_MODE)
+        self.game_service.set_player_key(str(PLAYER_LOSER['key']))
+        self.game_service._display_game_result(PLAYER_WINNER, PLAYER_LOSER)
+        output_lines = mock_stdout.getvalue().split('\n')
+
         assert 'I lost!' in output_lines
