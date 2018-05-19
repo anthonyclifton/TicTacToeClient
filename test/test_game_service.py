@@ -4,7 +4,8 @@ import unittest
 from mock import MagicMock, patch
 
 from test.game_data import GAME_COMPLETED_PLAYER_O_WINS, GAME_INPROGRESS_NO_MOVES_YET, GAME_INPROGRESS_2X2, \
-    GAME_COMPLETED_3X3_PLAYER_O_WINS, GAME_COMPLETED_2X3_PLAYER_O_WINS
+    GAME_COMPLETED_3X3_PLAYER_O_WINS, GAME_COMPLETED_2X3_PLAYER_O_WINS, PLAYER_KEY
+from tictactoeclient.constants import LOBBY_MODE
 from tictactoeclient.services.game_service import GameService
 
 
@@ -83,3 +84,15 @@ class TestGameService(unittest.TestCase):
         for line_number in range(0, len(expected_output_lines)):
             self.assertEqual(expected_output_lines[line_number],
                              output_lines[line_number])
+
+    def test__set_game_mode__sets_the_game_mode(self,
+                                                mock_stdout):
+        self.game_service.set_game_mode(LOBBY_MODE)
+
+        self.assertEqual(LOBBY_MODE, self.game_service.game_mode)
+
+    def test__set_player_key__sets_the_player_key(self,
+                                                  mock_stdout):
+        self.game_service.set_player_key(str(PLAYER_KEY))
+
+        self.assertEqual(str(PLAYER_KEY), self.game_service.player_key)

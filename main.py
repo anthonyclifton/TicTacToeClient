@@ -7,7 +7,7 @@ import argparse
 
 from tictactoeclient.configuration import SERVER_BASE_URL, CLIENT_BIND_ADDRESS, CREATE_PORT, JOIN_PORT, \
     CLIENT_UPDATE_HOST, CREATE_GAME_NAME, CREATE_PLAYER_NAME, JOIN_PLAYER_NAME
-from tictactoeclient.constants import LOBBY_PORT
+from tictactoeclient.constants import LOBBY_PORT, CREATE_GAME_MODE, LOBBY_MODE, JOIN_GAME_MODE
 from tictactoeclient.schemas.game_schema import GameSchema
 from tictactoeclient.services.game_service import GameService
 from tictactoeclient.services.t3_api_service import T3ApiService
@@ -67,20 +67,26 @@ def _setup_arg_parser():
 
 def _parse_command_line_arguments(client_mode):
     if client_mode is 'create':
-        port = _get_port(create_game_mode=True)
+        port = _setup_based_on_game_mode(CREATE_GAME_MODE)
         update_url = _get_update_url(port)
         tictactoe_api_service.create_game(CREATE_GAME_NAME, CREATE_PLAYER_NAME, update_url)
         _run_game_update_listener(port)
     elif client_mode is 'join':
-        port = _get_port()
+        port = _setup_based_on_game_mode(JOIN_GAME_MODE)
         update_url = _get_update_url(port)
         tictactoe_api_service.join_game(args.game_key, JOIN_PLAYER_NAME, update_url)
         _run_game_update_listener(port)
     elif client_mode is 'lobby':
-        port = _get_port(lobby_mode=True)
+        port = _setup_based_on_game_mode(LOBBY_MODE)
         update_url = _get_update_url(port)
-        tictactoe_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
+        player = tictactoe_api_service.enter_lobby(JOIN_PLAYER_NAME, update_url)
+        game_service.set_player_key(player['key'])
         _run_game_update_listener(port)
+
+
+def _setup_based_on_game_mode(game_mode):
+    game_service.set_game_mode(game_mode)
+    return _get_port(game_mode)
 
 
 def _display_ready_message():
@@ -88,10 +94,10 @@ def _display_ready_message():
     print "SHALL WE PLAY A GAME?\n"
 
 
-def _get_port(create_game_mode=False, lobby_mode=False):
-    if create_game_mode:
+def _get_port(game_mode):
+    if game_mode == CREATE_GAME_MODE:
         return CREATE_PORT
-    elif lobby_mode:
+    elif game_mode == LOBBY_MODE:
         return LOBBY_PORT
     else:
         return JOIN_PORT

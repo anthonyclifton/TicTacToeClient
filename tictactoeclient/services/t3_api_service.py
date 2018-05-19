@@ -45,6 +45,8 @@ class T3ApiService(object):
 
         print("Entered lobby as: {}, using key: {}\n".format(player['name'], player['key']))
 
+        return player
+
     def _generic_post(self, url, payload):
         return self.requests.post(url, json=payload)
 
