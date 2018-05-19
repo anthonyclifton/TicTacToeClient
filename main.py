@@ -7,8 +7,9 @@ import argparse
 
 from tictactoeclient.configuration import SERVER_BASE_URL, CLIENT_BIND_ADDRESS, CREATE_PORT, JOIN_PORT, \
     CLIENT_UPDATE_HOST, CREATE_GAME_NAME, CREATE_PLAYER_NAME, JOIN_PLAYER_NAME
+from tictactoeclient.constants import LOBBY_PORT
 from tictactoeclient.schemas.game_schema import GameSchema
-from tictactoeclient.services.game_service import GameService, LOBBY_PORT
+from tictactoeclient.services.game_service import GameService
 from tictactoeclient.services.t3_api_service import T3ApiService
 
 

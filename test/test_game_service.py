@@ -5,7 +5,7 @@ from mock import MagicMock, patch
 
 from test.game_data import GAME_COMPLETED_PLAYER_O_WINS, GAME_INPROGRESS_NO_MOVES_YET, GAME_INPROGRESS_2X2, \
     GAME_COMPLETED_3X3_PLAYER_O_WINS, GAME_COMPLETED_2X3_PLAYER_O_WINS
-from tictactoeclient.services.game_service import GameService, GAME_COMPLETED, GAME_INPROGRESS
+from tictactoeclient.services.game_service import GameService
 
 
 @patch('sys.stdout', new_callable=StringIO)

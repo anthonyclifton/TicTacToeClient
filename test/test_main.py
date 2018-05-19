@@ -2,7 +2,7 @@ import unittest
 
 from main import _get_port, _get_update_url
 from tictactoeclient.configuration import CREATE_PORT, JOIN_PORT, CLIENT_UPDATE_HOST
-from tictactoeclient.services.game_service import LOBBY_PORT
+from tictactoeclient.constants import LOBBY_PORT
 
 
 class TestMain(unittest.TestCase):

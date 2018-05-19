@@ -1,0 +1,19 @@
+from random import randint
+
+END_GAME_NULL_MOVE = {'x': -1, 'y': -1}
+
+GAME_INPROGRESS = 1
+GAME_COMPLETED = 4
+LOBBY_PORT = randint(44100, 44199)
+
+CORNER_MARKER = '+'
+HORIZONTAL_BORDER = '-'
+VERTICAL_BORDER = '|'
+X_MARKER = 'X'
+O_MARKER = 'O'
+EMPTY_MARKER = ' '
+
+VALUE_TO_MARKER = {
+    1: O_MARKER,
+    2: X_MARKER
+}
