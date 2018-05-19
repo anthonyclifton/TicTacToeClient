@@ -160,3 +160,12 @@ class TestGameService(unittest.TestCase):
         output_lines = mock_stdout.getvalue().split('\n')
 
         assert 'I lost!' in output_lines
+
+    def test__display_game_result__draw_if_lobby_mode_and_both_players_losers(self,
+                                                                                  mock_stdout):
+        self.game_service.set_game_mode(LOBBY_MODE)
+        self.game_service.set_player_key(str(PLAYER_LOSER['key']))
+        self.game_service._display_game_result(PLAYER_LOSER, PLAYER_LOSER)
+        output_lines = mock_stdout.getvalue().split('\n')
+
+        assert 'A draw!' in output_lines

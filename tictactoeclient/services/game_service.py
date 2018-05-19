@@ -45,10 +45,14 @@ class GameService(object):
         if self.game_mode == CREATE_GAME_MODE:
             self._display_win_loss_message(self._is_player_winner(player_x))
         elif self.game_mode == LOBBY_MODE:
-            if self._is_player_x(player_x):
-                self._display_win_loss_message(self._is_player_winner(player_x))
+            if not self._is_player_winner(player_x) and \
+                    not self._is_player_winner(player_o):
+                print "A draw!"
             else:
-                self._display_win_loss_message(self._is_player_winner(player_o))
+                if self._is_player_x(player_x):
+                    self._display_win_loss_message(self._is_player_winner(player_x))
+                else:
+                    self._display_win_loss_message(self._is_player_winner(player_o))
         else:
             self._display_win_loss_message(self._is_player_winner(player_o))
         return END_GAME_NULL_MOVE
@@ -106,4 +110,3 @@ class GameService(object):
     @staticmethod
     def _is_player_winner(player):
         return player['winner'] is True
-
