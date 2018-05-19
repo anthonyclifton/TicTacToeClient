@@ -22,9 +22,8 @@ class T3ApiService(object):
         response = self._generic_post("{}/create".format(self.base_url), payload)
         game, errors = GameSchema().loads(response.content)
 
-        print ""
         print("To join this game, run:")
-        print("./join {}".format(game['key']))
+        print("./join {}\n".format(game['key']))
 
     def join_game(self, game_key, player_name, update_url):
         payload = {
@@ -44,8 +43,7 @@ class T3ApiService(object):
         response = self._generic_post(url, payload)
         player, errors = PlayerSchema().loads(response.content)
 
-        print ""
-        print("Entered lobby as: {}, using key: {}".format(player['name'], player['key']))
+        print("Entered lobby as: {}, using key: {}\n".format(player['name'], player['key']))
 
     def _generic_post(self, url, payload):
         return self.requests.post(url, json=payload)
