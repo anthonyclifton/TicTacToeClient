@@ -81,3 +81,48 @@ where `X.X.X.X` is the value from `inet` in the previous step
   game updates are sent to both clients with the value of the `state` key set to 4
   (or GAME_COMPLETED).  While in the play the `state` is set to 1 (or GAME_INPROGRESS).
 * Tournament Mode
+  * Execute `./lobby` on each client you'd like to have participate in a tournament.
+  * Each client sends an http post to the game server, notifying it that it would like
+  to enter the tournament lobby.
+  * The server responds to each client with the player object.
+  * When the tournament master sends an post to the `http://server-host:server-port/tournament`
+  endpoint, a new tournament is created with the players in the lobby at that time.
+  Players who
+  subsequently enter the lobby cannot participate in that tournament.
+  * When the tournament master sends a post to `http://server-host:server-port/round`
+  the server starts a round.
+  * The server generates every combination of 2 players from all the players in the lobby.
+  * From each of these combinations, it starts a new game.
+  * This game operates the same as in player-vs-player mode, with the server alternating
+  between the two clients participating in the game, posting to their /update endpoints
+  and receiving back their moves.
+  * When all the games in a round are completed, the server displays the results of
+  each individual game and of the round as a whole.
+  * Subsequent rounds can also be executed.  It is possible to adjust the round's
+  board size and winning line length in the post body so that rounds can increase in
+  difficulty.
+  * When the tournament master sends a delete to `http://server-host:server-port/tournament`
+  all tournaments are closed and the results of each tournament are displayed on the
+  server's output.
+
+## Running the Server
+
+* You can run the server locally by executing the `run.sh` script in its project directory.
+* The server will run on port 3334.
+* If you just do `./create` and `./join` it will run automatically.
+* If you wish to run it in tournament mode, then you will need to install Postman so you
+can do some GETs and POSTs to control it.
+* `GET http://localhost:3334/lobby` will give you a list of everyone in the lobby.
+* `POST http://localhost:3334/tournament` will allow you to create a tournament.  You must
+supply an `application/json` raw post body like the following:
+
+`{
+	"tournament_name": "Test Tournament 5"
+}`
+
+## Notes
+
+* Sending a move that is outside the boundary of the game board will result in a draw.
+* The points assigned to the round are the larger of the X and Y dimensions of the board
+divided by 3 and multiplied by 2.
+* On a draw, the points are split 50/50 between the game participants.
