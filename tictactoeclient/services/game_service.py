@@ -20,34 +20,10 @@ class GameService(object):
     def process_updated_game_from_server(self, updated_game):
         self._display_game_board(updated_game)
         if updated_game['state'] == GAME_COMPLETED:
-            return self._display_game_result(updated_game)
+            return self._display_game_result(updated_game['player_x'],
+                                             updated_game['player_o'])
         else:
             return self._choose_next_move(updated_game)
-
-    def _display_game_result(self, updated_game):
-        print ""
-        if self.game_mode == CREATE_GAME_MODE:
-            if updated_game['player_x']['winner']:
-                print("I won!")
-            else:
-                print("I lost!")
-        elif self.game_mode == LOBBY_MODE:
-            if self._is_player_x(updated_game):
-                if updated_game['player_x']['winner']:
-                    print("I won!")
-                else:
-                    print("I lost!")
-            else:
-                if updated_game['player_o']['winner']:
-                    print("I won!")
-                else:
-                    print("I lost!")
-        else:
-            if updated_game['player_o']['winner']:
-                print("I won!")
-            else:
-                print("I lost!")
-        return END_GAME_NULL_MOVE
 
     @staticmethod
     def _choose_next_move(updated_game):
@@ -63,6 +39,29 @@ class GameService(object):
         move_x = next_move[0]
         move_y = next_move[1]
         return {'x': move_x, 'y': move_y}
+
+    def _display_game_result(self, player_x, player_o):
+        print ""
+        if self.game_mode == CREATE_GAME_MODE:
+            self._display_win_loss_message(self._is_player_winner(player_x))
+        elif self.game_mode == LOBBY_MODE:
+            if self._is_player_x(player_x):
+                if player_x['winner']:
+                    print("I won!")
+                else:
+                    print("I lost!")
+            else:
+                if player_o['winner']:
+                    print("I won!")
+                else:
+                    print("I lost!")
+        else:
+            self._display_win_loss_message(self._is_player_winner(player_o))
+        return END_GAME_NULL_MOVE
+
+    @staticmethod
+    def _display_win_loss_message(is_winner):
+        print "I won!" if is_winner else "I lost!"
 
     def _display_game_board(self, updated_game):
         size_x = updated_game['size_x']
@@ -107,5 +106,10 @@ class GameService(object):
                               (HORIZONTAL_BORDER * size_x),
                               CORNER_MARKER)
 
-    def _is_player_x(self, updated_game):
-        return updated_game['player_x']['key'] == self.player_key
+    def _is_player_x(self, player_x):
+        return player_x['key'] == self.player_key
+
+    @staticmethod
+    def _is_player_winner(player):
+        return player['winner'] is True
+

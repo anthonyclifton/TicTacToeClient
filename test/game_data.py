@@ -11,6 +11,16 @@ CREATE_RESPONSE = json.dumps({'key': str(GAME_KEY)})
 
 LOBBY_RESPONSE = json.dumps({'name': 'Player Name', 'key': str(PLAYER_KEY)})
 
+PLAYER_WINNER = {
+    'name': 'player winner',
+    'winner': True
+}
+
+PLAYER_LOSER = {
+    'name': 'player loser',
+    'winner': False
+}
+
 GAME_COMPLETED_PLAYER_O_WINS = {
     'size_x': 3,
     'size_y': 3,
